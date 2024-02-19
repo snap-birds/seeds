@@ -31,7 +31,7 @@ jobs:
             core.setOutput('application', application);
 
   apply:
-    uses: ./github/.workflows/wf_apply_tf.yml
+    uses: ./.github/workflows/wf_apply_tf.yml
     needs: [get_application]
     with:
       application_id: ${{ inputs.application_id }}
