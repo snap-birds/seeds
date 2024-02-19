@@ -2,12 +2,13 @@ name: PR check
 
 on:
   pull_request:
+    types:
+      - opened
+      - reopened
     branches:
       - main
-    paths-ignore:
-      - README.md
-      - .github/**
-      - .gitignore
+    paths:
+      - 'applications/**'
 
 jobs:
   get_changes:
@@ -15,18 +16,62 @@ jobs:
     name: Get changed files
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
+        # with:
+        #   fetch-depth: 2
 
-      - name: Get all changed directories
-        id: changed
-        uses: tj-actions/changed-files@v42
+      - uses: actions/github-script@v7
+        id: getApp
+        if: github.event_name == 'pull_request'
         with:
-          dir_names: true
-          dir_names_max_depth: 3
-          json: true
-          escape_json: false
-          files: 'apps/**'
+          script: |
+            const regex = /\[Label.*\]\[(?<app>.*)\] .*/;
+            const application = regex.exec(github.event.pull_request.title).groups['app'];
+            core.setOutput('application', application);
+
+      # - name: Get all changed directories
+      #   id: changed
+      #   uses: tj-actions/changed-files@v42
+      #   with:
+      #     dir_names: true
+      #     dir_names_max_depth: 3
+      #     json: true
+      #     escape_json: false
+      #     files: 'apps/**'
 
       - name: debug
-        run: echo ${{ steps.changed.outputs.all_changed_files }}
+        run: echo ${{ steps.getApp.outputs.application }}
+
+      # Terraform install
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.5.7"
+
+      # Terraform Init
+      - name: Initialize Terraform
+        id: init
+        env:
+          tf_workspace_path: "applications/${{ steps.getApp.outputs.application }}"
+        run: 'terraform -chdir=${{ env.tf_workspace_path }} init'
+
+      # Terraform Validate
+      - name: Terraform Validate
+        id: validate
+        env:
+          tf_workspace_path: "applications/${{ steps.getApp.outputs.application }}"
+        run: 'terraform -chdir=${{ env.tf_workspace_path }} validate'
+
+      # Terraform Plan
+      - name: Plan Terraform
+        id: plan
+        env:
+          tf_workspace_path: "applications/${{ steps.getApp.outputs.application }}"
+        run: |
+          set -o pipefail
+          terraform -chdir=${{ env.tf_workspace_path }} plan -no-color -input=false | tee plan.log
+        continue-on-error: true
+
+      # Plan status
+      - name: Exit on plan fail
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
