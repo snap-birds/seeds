@@ -4,9 +4,9 @@ on:
   pull_request:
     types:
       - closed
-      - auto_merge_enabled
-    # branches:
-    #   - "main"
+
+    branches:
+      - "main"
     paths:
       - 'applications/**'
 
@@ -21,10 +21,10 @@ jobs:
   deploy_changes:
     runs-on: ubuntu-latest
     name: Deploy changes
+    if: (github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true) || github.event_name == 'workflow_dispatch'
     steps:
       - uses: actions/github-script@v7
         id: getApp
-        if: (github.event_name == 'pull_request' && github.event.pull_request.merged == true) || github.event_name == 'workflow_dispatch'
         with:
           script: |
             const regex = /\[Label.*\]\[(?<app>.*)\] .*/;
