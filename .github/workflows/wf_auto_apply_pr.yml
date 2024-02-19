@@ -4,6 +4,7 @@ on:
   pull_request:
     types:
       - closed
+      - auto_merge_enabled
 
     branches:
       - main
