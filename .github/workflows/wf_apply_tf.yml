@@ -1,0 +1,57 @@
+name: Terraform apply
+
+on:
+  workflow_call:
+    inputs:
+      application_id:
+        required: true
+        type: string
+        description: Application ID
+  workflow_dispatch:
+    inputs:
+      application_id:
+        required: true
+        type: string
+        description: Application ID
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    name: Deploy changes
+    steps:
+      - uses: actions/checkout@v4
+
+      # Terraform install
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.5.7"
+
+      # Terraform Init
+      - name: Initialize Terraform
+        id: init
+        env:
+          tf_workspace_path: "applications/${{ inputs.application_id }}"
+        run: 'terraform -chdir=${{ env.tf_workspace_path }} init'
+
+      # Terraform Validate
+      - name: Terraform Validate
+        id: validate
+        env:
+          tf_workspace_path: "applications/${{ inputs.application_id }}"
+        run: 'terraform -chdir=${{ env.tf_workspace_path }} validate'
+
+      # Terraform Plan
+      - name: Plan Terraform
+        id: plan
+        env:
+          tf_workspace_path: "applications/${{ inputs.application_id }}"
+        run: |
+          set -o pipefail
+          terraform -chdir=${{ env.tf_workspace_path }} plan -no-color -input=false | tee plan.log
+        continue-on-error: true
+
+      # Plan status
+      - name: Exit on plan fail
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
