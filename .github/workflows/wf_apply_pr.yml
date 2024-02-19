@@ -1,4 +1,4 @@
-name: PR check
+name: PR apply
 
 on:
   pull_request:
@@ -7,17 +7,18 @@ on:
     paths-ignore:
       - README.md
       - .github/**
+      - .gitignore
 
 jobs:
-  check:
+  get_changes:
     runs-on: ubuntu-latest
-    name: Test changed-files
+    name: Get changed files
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 2
 
-      - name: Get all changed markdown files
+      - name: Get all changed directories
         id: changed
         uses: tj-actions/changed-files@v42
         with:
@@ -25,6 +26,7 @@ jobs:
           dir_names_max_depth: 3
           json: true
           escape_json: false
+          files: 'apps/**'
 
       - name: debug
         run: echo ${{ steps.changed.outputs.all_changed_files }}
