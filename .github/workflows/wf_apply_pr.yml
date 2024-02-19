@@ -28,9 +28,9 @@ jobs:
           script: |
             const regex = /\[Label.*\]\[(?<app>.*)\] .*/;
             const title =
-              github.context.payload &&
-              github.context.payload.pull_request &&
-              github.context.payload.pull_request.title
+              context.payload &&
+              context.payload.pull_request &&
+              context.payload.pull_request.title
 
             if (github.event_name == 'pull_request') {
               const application = regex.exec(title).groups['app'];
