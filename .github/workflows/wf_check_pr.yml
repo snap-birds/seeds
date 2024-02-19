@@ -11,9 +11,11 @@ on:
       - 'applications/**'
 
 jobs:
-  get_changes:
+  check:
     runs-on: ubuntu-latest
-    name: Get changed files
+    name: Check TF
+    permissions:
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
         # with:
