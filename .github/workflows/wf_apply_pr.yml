@@ -4,8 +4,9 @@ on:
   pull_request:
     types:
       - closed
-    branches:
-      - "main"
+      - auto_merge_enabled
+    # branches:
+    #   - "main"
     paths:
       - 'applications/**'
 
@@ -32,7 +33,7 @@ jobs:
               context.payload.pull_request &&
               context.payload.pull_request.title
 
-            if (github.event_name == 'pull_request') {
+            if (context.event_name == 'pull_request') {
               const application = regex.exec(title).groups['app'];
             } else {
               const application = core.getInput('application_id');
