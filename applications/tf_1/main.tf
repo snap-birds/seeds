@@ -1,6 +1,6 @@
 variable "input" {
   type = string
-  default = "foobar"
+  default = "foobaz"
 }
 
 resource "terraform_data" "main" {
