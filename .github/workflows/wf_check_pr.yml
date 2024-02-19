@@ -25,7 +25,11 @@ jobs:
         with:
           script: |
             const regex = /\[Label.*\]\[(?<app>.*)\] .*/;
-            const application = regex.exec(github.event.pull_request.title).groups['app'];
+            const title =
+              github.context.payload &&
+              github.context.payload.pull_request &&
+              github.context.payload.pull_request.title
+            const application = regex.exec(title).groups['app'];
             core.setOutput('application', application);
 
       # - name: Get all changed directories
