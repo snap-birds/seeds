@@ -51,6 +51,7 @@ jobs:
             ApplicationPath:::applications/${{ inputs.application_id }}:::
 
           commit-message: "Create new ${{ inputs.application_id }} application"
+          committer: ${{ github.actor }} <${{ github.actor_id }}+${{ github.actor }}@users.noreply.github.com>
           add-paths: "applications/${{ inputs.application_id }}/*"
           branch-suffix: timestamp
           labels: automerge,testmerge
