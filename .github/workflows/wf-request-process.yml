@@ -1,13 +1,13 @@
 name: Request process
 
 on:
-  pull_request_target:
+  pull_request:
     types:
       - opened
       - reopened
       - closed
     branches:
-      - create-pull-request/patch-*
+      - main
     paths:
       - "applications/**"
 
@@ -50,6 +50,8 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' && contains(fromJSON('["opened", "reopened"]'), github.event.action)
     needs: 'validate'
+    permissions:
+      pull-requests: write
     steps:
       - uses: actions/github-script@v7
         env:
