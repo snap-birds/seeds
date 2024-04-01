@@ -1,0 +1,91 @@
+name: Request process
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - closed
+    branches:
+      - main
+    paths:
+      - "applications/**"
+
+jobs:
+  params:
+    runs-on: ubuntu-latest
+    name: Get parameters
+    if: github.event_name == 'pull_request' && contains(fromJSON('["opened", "reopened", "closed"]'), github.event.action)
+    outputs:
+      application_path: ${{ steps.get_parameters.outputs.application_path }}
+
+    steps:
+      - uses: actions/github-script@v7
+        id: get_parameters
+        with:
+          script: |
+            const body = context.payload && context.payload.pull_request && context.payload.pull_request.body;
+            core.setOutput('application_path', body.match(/^ApplicationPath:::(.+):::$/m)[1]);
+
+  apply:
+    name: Terraform Apply
+    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
+    needs: params
+    uses: ./.github/workflows/wf_tf.yml
+    with:
+      workspace_path: ${{ needs.params.outputs.application_path }}
+      dry_run: false
+
+  validate:
+    name: Terraform Plan
+    if: github.event_name == 'pull_request' && contains(fromJSON('["opened", "reopened"]'), github.event.action)
+    needs: params
+    uses: ./.github/workflows/wf_tf.yml
+    with:
+      workspace_path: ${{ needs.params.outputs.application_path }}
+      dry_run: true
+
+  close_pr:
+    name: Close pull request
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && contains(fromJSON('["opened", "reopened"]'), github.event.action)
+    needs: 'validate'
+    steps:
+      - uses: actions/github-script@v7
+        env:
+          PLAN: "terraform\n${{ needs.validate.outputs.plan_stdout }}"
+        with:
+          script: |
+            const output = `#### Terraform Validation 🤖\`${{ needs.validate.outputs.validate }}\`
+            <details><summary>Validation Output</summary>
+
+            \`\`\`\n
+            ${{ needs.validate.outputs.validate_stdout }}
+            \`\`\`
+
+            </details>
+
+            #### Terraform Plan 📖\`${{ needs.validate.outputs.plan }}\`
+
+            <details><summary>Show Plan</summary>
+
+            \`\`\`\n
+            ${process.env.PLAN}
+            \`\`\`
+
+            </details>`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+
+      - name: Automerge the pull request
+        continue-on-error: true
+        uses: pascalgn/automerge-action@v0.16.2
+        env:
+          UPDATE_METHOD: rebase
+          MERGE_LABELS: automerge,testmerge
+          UPDATE_LABELS: automerge,testmerge
