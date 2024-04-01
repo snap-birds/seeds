@@ -88,6 +88,7 @@ jobs:
         continue-on-error: true
         uses: pascalgn/automerge-action@v0.16.2
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           UPDATE_METHOD: rebase
           MERGE_LABELS: automerge,testmerge
           UPDATE_LABELS: automerge,testmerge
