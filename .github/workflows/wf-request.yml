@@ -1,0 +1,40 @@
+name: Request
+
+on:
+  workflow_dispatch:
+    inputs:
+      application_id:
+        type: string
+        required: true
+        description: Application ID
+    # secrets:
+    #   token:
+    #     description: "The GitHub access token with permissions to create the pull request."
+    #     required: true
+
+jobs:
+  generate:
+    name: "Generate Terraform files and create pull request."
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'write'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - run: |
+          mkdir -p applications/${{ inputs.application_id }}
+          cp example/main.tf applications/${{ inputs.application_id }}/
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          title: "Create new ${{ inputs.application_id }} application"
+          body: |
+            ApplicationPath:::applications/${{ inputs.application_id }}:::
+
+          commit-message: "Create new ${{ inputs.application_id }} application"
+          add-paths: "applications/${{ inputs.application_id }}/*"
+          branch-suffix: timestamp
+          labels: automerge,testmerge
+          delete-branch: true

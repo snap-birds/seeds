@@ -1,0 +1,82 @@
+name: Terraform
+
+on:
+  workflow_call:
+    inputs:
+      workspace_path:
+        description: The Terraform workspace path
+        required: true
+        type: string
+      dry_run:
+        description: Run Terraform for validation only
+        type: string
+        required: true
+        default: 'true'
+    # secrets:
+    #   token:
+    #     description: "The GitHub access token."
+    #     required: true
+    outputs:
+      validate:
+        description: Terraform validate outcome
+        value: ${{ jobs.terraform.outputs.validate }}
+      validate_stdout:
+        description: Terraform validate stdout
+        value: ${{ jobs.terraform.outputs.validate_stdout }}
+      plan:
+        description: Terraform plan outcome
+        value: ${{ jobs.terraform.outputs.plan }}
+      plan_stdout:
+        description: Terraform plan stdout
+        value: ${{ jobs.terraform.outputs.plan_stdout }}
+
+jobs:
+  terraform:
+    name: ${{ inputs.dry_run == 'true' && 'Validate' || 'Apply' }}
+    runs-on: ubuntu-latest
+    outputs:
+      validate: ${{ inputs.dry_run == 'true' && steps.validate.outcome || 'skip' }}
+      validate_stdout: ${{ inputs.dry_run == 'true' && steps.validate.outputs.stdout || 'skip' }}
+      plan: ${{ inputs.dry_run == 'true' && steps.plan.outcome || 'skip' }}
+      plan_stdout: ${{ inputs.dry_run == 'true' && steps.plan.outputs.stdout || 'skip' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.5.7"
+
+      - name: Initialize Terraform workspace
+        id: init
+        run: 'terraform -chdir=${{ inputs.workspace_path }} init'
+
+      - name: Terraform validate
+        id: validate
+        if: inputs.dry_run == 'true'
+        run: 'terraform -chdir=${{ inputs.workspace_path }} validate'
+
+      - name: Terraform plan
+        id: plan
+        if: inputs.dry_run == 'true'
+        run: |
+          set -o pipefail
+          terraform -chdir=${{ inputs.workspace_path }} plan -no-color -input=false -out=tfplan.binary | tee plan.log
+        continue-on-error: true
+
+      - name: Fail on the Terraform plan errors
+        if: inputs.dry_run == 'true' && steps.plan.outcome == 'failure'
+        run: exit 1
+
+      - name: Apply Terraform
+        id: apply
+        if: inputs.dry_run == 'false'
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          terraform -chdir=${{ inputs.workspace_path }} apply -auto-approve -no-color -input=false | tee apply.log
+
+      - name: Fail on the Terraform apply errors
+        if: inputs.dry_run == 'false' && steps.apply.outcome == 'failure'
+        run: exit 1
