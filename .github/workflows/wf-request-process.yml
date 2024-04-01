@@ -31,7 +31,7 @@ jobs:
     name: Terraform Apply
     if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true
     needs: params
-    uses: ./.github/workflows/wf_terraform.yml
+    uses: ./.github/workflows/wf-terraform.yml
     with:
       workspace_path: ${{ needs.params.outputs.application_path }}
       dry_run: false
@@ -40,7 +40,7 @@ jobs:
     name: Terraform Plan
     if: github.event_name == 'pull_request' && contains(fromJSON('["opened", "reopened"]'), github.event.action)
     needs: params
-    uses: ./.github/workflows/wf_terraform.yml
+    uses: ./.github/workflows/wf-terraform.yml
     with:
       workspace_path: ${{ needs.params.outputs.application_path }}
       dry_run: true
