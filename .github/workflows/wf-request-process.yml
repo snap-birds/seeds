@@ -54,6 +54,7 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/github-script@v7
+        name: Comment pull request
         env:
           PLAN: "terraform\n${{ needs.validate.outputs.plan_stdout }}"
         with:
@@ -83,26 +84,22 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: output
-            })
+            });
 
-      # - uses: actions/github-script@v7
-      #   name: Review changes
-      #   with:
-      #     github-token: ${{ secrets.PIPELINE_TOKEN }}
-      #     script: |
-      #       github.rest.pulls.createReview({
-      #         pull_number: context.issue.number,
-      #         owner: context.repo.owner,
-      #         repo: context.repo.repo,
-      #         body: "Autoapprove changes",
-      #         event: "APPROVE",
-      #       })
-
-      - name: Automerge the pull request
+      - uses: actions/github-script@v7
+        name: Close pull request
         continue-on-error: true
-        uses: pascalgn/automerge-action@v0.16.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.PIPELINE_TOKEN }}
-          UPDATE_METHOD: rebase
-          MERGE_LABELS: automerge,testmerge
-          UPDATE_LABELS: automerge,testmerge
+        with:
+          github-token: ${{ secrets.PIPELINE_TOKEN }}
+          script: |
+            github.rest.pulls.updateBranch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+            });
+
+            github.rest.pulls.merge({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+            });
