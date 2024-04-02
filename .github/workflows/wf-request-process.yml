@@ -57,6 +57,7 @@ jobs:
         env:
           PLAN: "terraform\n${{ needs.validate.outputs.plan_stdout }}"
         with:
+          github-token: ${{ secrets.PIPELINE_TOKEN }}
           script: |
             const output = `#### Terraform Validation 🤖\`${{ needs.validate.outputs.validate }}\`
             <details><summary>Validation Output</summary>
@@ -88,7 +89,7 @@ jobs:
         continue-on-error: true
         uses: pascalgn/automerge-action@v0.16.2
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PIPELINE_TOKEN }}
           UPDATE_METHOD: rebase
           MERGE_LABELS: automerge,testmerge
           UPDATE_LABELS: automerge,testmerge

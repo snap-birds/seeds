@@ -7,46 +7,26 @@ on:
         type: string
         required: true
         description: Application ID
-      token:
-        type: string
-        required: true
-        default: ''
-    # secrets:
-    #   token:
-    #     description: "The GitHub access token with permissions to create the pull request."
-    #     required: true
 
 jobs:
   generate:
     name: "Generate Terraform files and create pull request."
     runs-on: ubuntu-latest
-    permissions:
-      contents: 'write'
-      pull-requests: write
 
     steps:
-      - id: mask
-        run: |
-          GH_TOKEN=$(jq -r '.inputs.token' $GITHUB_EVENT_PATH)
-          echo ::add-mask::$GH_TOKEN
-          echo GH_TOKEN=$GH_TOKEN >> $GITHUB_ENV
-
       - uses: actions/checkout@v4
+        with:
+            token: ${{ secrets.PIPELINE_TOKEN }}
 
       - run: |
           mkdir -p applications/${{ inputs.application_id }}
           cp example/main.tf applications/${{ inputs.application_id }}/
 
-      - env:
-          TOK: ${{ env.GH_TOKEN }}
-        run: echo $TOK
-
-
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
           title: "Create new ${{ inputs.application_id }} application"
-          token: ${{ env.GH_TOKEN }}
+          token: ${{ secrets.PIPELINE_TOKEN }}
           body: |
             ApplicationPath:::applications/${{ inputs.application_id }}:::
 
