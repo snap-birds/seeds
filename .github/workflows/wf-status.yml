@@ -1,0 +1,26 @@
+name: Request
+
+on:
+  workflow_dispatch
+
+jobs:
+  generate:
+    name: "Output steps statues"
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - run: echo foo
+        id: foo
+
+      - run: echo bar
+        id: bar
+
+      - run: exit 2
+        id: baz
+        continue-on-error: true
+
+      - run: echo $CONTEXT
+        env:
+          CONTEXT: ${{ toJson(steps) }}
