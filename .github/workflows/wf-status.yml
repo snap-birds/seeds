@@ -24,3 +24,7 @@ jobs:
       - run: echo $CONTEXT
         env:
           CONTEXT: ${{ toJson(steps) }}
+
+      - run: echo $CONTEXT
+        env:
+          CONTEXT: ${{ toJson(steps.*.outcome) }}
