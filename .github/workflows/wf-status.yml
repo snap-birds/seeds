@@ -1,4 +1,4 @@
-name: Request
+name: Test outputs
 
 on:
   workflow_dispatch
