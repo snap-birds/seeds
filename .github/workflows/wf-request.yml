@@ -18,11 +18,13 @@ jobs:
         with:
             token: ${{ secrets.PIPELINE_TOKEN }}
 
-      - run: |
+      - id: request_generate
+        run: |
           mkdir -p applications/${{ inputs.application_id }}
           cp example/main.tf applications/${{ inputs.application_id }}/
 
       - name: Create Pull Request
+        id: request_create_pr
         uses: peter-evans/create-pull-request@v6
         with:
           title: "Create new ${{ inputs.application_id }} application"
@@ -36,3 +38,8 @@ jobs:
           branch-suffix: timestamp
           labels: automerge,testmerge
           delete-branch: true
+
+      - run: echo $CONTEXT
+        if: always()
+        env:
+          CONTEXT: ${{ toJson(steps) }}
