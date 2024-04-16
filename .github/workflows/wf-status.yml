@@ -12,19 +12,27 @@ jobs:
       - uses: actions/checkout@v4
 
       - run: echo foo
-        id: foo
+        id: step1_success
 
       - run: echo bar
-        id: bar
+        id: step2_success
 
       - run: exit 2
-        id: baz
+        id: step3_fail
         continue-on-error: true
 
+      - run: echo baz
+        if: false
+        id: step4_skip
+
+      - run: exit 2
+        id: step4_fail
+
+      - run: echo buzz
+        id: step5_never
+
       - run: echo $CONTEXT
+        if: always()
         env:
           CONTEXT: ${{ toJson(steps) }}
 
-      - run: echo $CONTEXT
-        env:
-          CONTEXT: ${{ toJson(steps.*.outcome) }}
