@@ -9,6 +9,7 @@ const stepsErrors = new Array(
   {id: "req_create_pr#success", error: 'HANDLE_SUCCESS', context: ["run_id:runId", "pull_request_url:pull-request-url", "repository_url:repository.html_url"]},
   {id: "proc_close_pr#failure", error: 'PROCESS_CLOSE_PR_ERROR', context: ["run_id:runId", "pull_request_url:pull_request.issue_url", "repository_url:repository.html_url"]},
   {id: "proc_close_pr#success", error: 'PROCESS_SUCCESS', context: ["run_id:runId", "pull_request_url:pull_request.issue_url", "repository_url:repository.html_url"]},
+  {id: "validate#failure", error: 'PROVISION_VALIDATE_ERROR', context: ["run_id:runId", "pull_request_url:pull_request.issue_url", "repository_url:repository.html_url", "details:stderr"]},
   {id: "plan#failure", error: 'PROVISION_VALIDATE_ERROR', context: ["run_id:runId", "pull_request_url:pull_request.issue_url", "repository_url:repository.html_url", "details:stderr"]},
   {id: "apply#failure", error: 'PROVISION_APPLY_ERROR', context: ["run_id:runId", "pull_request_url:pull_request.issue_url", "repository_url:repository.html_url", "details:stderr"]},
   {id: "apply#success", error: 'PROVISION_SUCCESS', context: ["run_id:runId", "pull_request_url:pull_request.issue_url", "repository_url:repository.html_url"]},
