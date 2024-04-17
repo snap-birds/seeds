@@ -31107,7 +31107,7 @@ async function main() {
         message = {
           status: stepsErrors[i].error,
           context: Object.fromEntries(stepsErrors[i].context.map(
-            ctx => [ctx.replace('.', '_'), (getValue(ctx, step.outputs) ?? getValue(ctx, github.context) ?? getValue(github.context.payload) ?? '')]
+            ctx => [ctx.replace('.', '_'), (getValue(ctx, step.outputs) ?? getValue(ctx, github.context) ?? getValue(ctx, github.context.payload) ?? '')]
           ))
         };
         break;
