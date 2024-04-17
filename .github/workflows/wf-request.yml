@@ -22,7 +22,6 @@ jobs:
         run: |
           mkdir -p applications/${{ inputs.application_id }}
           cp example/main.tf applications/${{ inputs.application_id }}/
-          exit 1
 
       - name: Create Pull Request
         id: req_create_pr
