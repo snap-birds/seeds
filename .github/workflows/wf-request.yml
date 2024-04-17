@@ -47,6 +47,7 @@ jobs:
           [[ "${PULL_REQUEST_URL}" == "" ]] && exit 1
 
       - uses: ./actions/notify
+        if: always()
         with:
           steps: ${{ toJSON(steps) }}
           message: '{"foo": "bar"}'
