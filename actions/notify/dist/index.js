@@ -31120,6 +31120,11 @@ async function main() {
   // Pubsub logic
 }
 
+main().catch((err) => {
+  console.error(err);
+  core.setFailed(err.message);
+});
+
 })();
 
 module.exports = __webpack_exports__;
