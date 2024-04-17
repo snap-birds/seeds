@@ -31111,7 +31111,7 @@ async function main() {
         message = {
           status: stepsErrors[i].error,
           context: Object.fromEntries(stepsErrors[i].context.map(
-            ctx => [ctx, (step.outputs[ctx] ?? github.context.get(ctx) ?? '')]
+            ctx => [ctx, (step.outputs[ctx] ?? github.context[ctx] ?? '')]
             // ctx => [ctx, (step.outputs[ctx] ?? '')]
           ))
         };
