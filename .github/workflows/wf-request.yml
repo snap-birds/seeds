@@ -18,13 +18,13 @@ jobs:
         with:
             token: ${{ secrets.PIPELINE_TOKEN }}
 
-      - id: request_generate
+      - id: req_generate
         run: |
           mkdir -p applications/${{ inputs.application_id }}
           cp example/main.tf applications/${{ inputs.application_id }}/
 
       - name: Create Pull Request
-        id: request_create_pr
+        id: req_create_pr
         uses: peter-evans/create-pull-request@v6
         with:
           title: "Create new ${{ inputs.application_id }} application"
@@ -39,7 +39,14 @@ jobs:
           labels: automerge,testmerge
           delete-branch: true
 
-      - run: echo $CONTEXT
-        if: always()
+      - name: Is pull request created
+        id: req_create_pr_check
         env:
-          CONTEXT: ${{ toJson(steps) }}
+          PULL_REQUEST_URL: ${{ steps.request_create_pr.outputs.pull-request-url }}
+        run: |
+          [[ "${PULL_REQUEST_URL}" == "" ]] && exit 1
+
+      - uses: ./actions/notify
+        with:
+          steps: ${{ toJSON(steps) }}
+          message: '{"foo": "bar"}'
