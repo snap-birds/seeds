@@ -44,7 +44,6 @@ async function main() {
   }
   inputMessage["pipeline_status"] = message;
   console.log(inputMessage);
-  console.log(github.context)
 
   // Pubsub logic
 }
