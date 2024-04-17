@@ -41,7 +41,7 @@ jobs:
 
       - name: Is pull request created
         id: req_create_pr_check
-        run: '[[ "${{ steps.req_create_pr.outputs.pull-request-url }}" == "" ]] && exit 1'
+        run: '[[ "${{ steps.req_create_pr.outputs.pull-request-url }}" == "" ]] && exit 1 || exit 0'
 
       - uses: ./actions/notify
         if: always()
