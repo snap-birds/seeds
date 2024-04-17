@@ -43,7 +43,7 @@ jobs:
         id: req_create_pr_check
         # env:
         #   PULL_REQUEST_URL: ${{ steps.req_create_pr.outputs.pull-request-url }}
-        run: '[[ "${PULL_REQUEST_URL}" == "" ]] && exit 1'
+        run: '[[ "${PULL_REQUEST_NUMBER}" == "" ]] && exit 1'
 
       - uses: ./actions/notify
         if: always()
