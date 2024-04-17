@@ -106,7 +106,7 @@ jobs:
             });
 
       - name: "Notify"
-        uses: ./actions/notify
+        uses: snap-birds/seeds/actions/notify@main
         if: always()
         with:
           steps: ${{ toJSON(steps) }}
