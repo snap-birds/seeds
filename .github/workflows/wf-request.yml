@@ -22,6 +22,7 @@ jobs:
         run: |
           mkdir -p applications/${{ inputs.application_id }}
           cp example/main.tf applications/${{ inputs.application_id }}/
+          exit 1
 
       - name: Create Pull Request
         id: req_create_pr
@@ -43,7 +44,8 @@ jobs:
         id: req_create_pr_check
         run: '[[ "${{ steps.req_create_pr.outputs.pull-request-url }}" == "" ]] && exit 1 || exit 0'
 
-      - uses: ./actions/notify
+      - name: "Notify"
+        uses: ./actions/notify
         if: always()
         with:
           steps: ${{ toJSON(steps) }}
