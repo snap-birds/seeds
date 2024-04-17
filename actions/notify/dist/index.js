@@ -31083,15 +31083,15 @@ const github = __nccwpck_require__(3617);
 // const { PubSub } = require('@google-cloud/pubsub');
 
 const stepsErrors = new Array(
-  {id: "req_generate#(failure|skipped)", error: 'HANDLE_TEMPLATE_ERROR', context: ["runId", "repository.html_url"]},
-  {id: "req_create_pr_check#(failure|skipped)", error: 'HANDLE_UNCHANGED_ERROR', context: ["runId", "repository.html_url"]},
-  {id: "req_create_pr#(failure|skipped)", error: 'HANDLE_CREATE_PR_ERROR', context: ["runId", "repository.html_url"]},
-  {id: "req_create_pr#success", error: 'HANDLE_SUCCESS', context: ["runId", "pull-request-url", "repository.html_url"]},
-  {id: "proc_close_pr#failure", error: 'PROCESS_CLOSE_PR_ERROR', context: ["runId", "pull_request.issue_url"]},
-  {id: "proc_close_pr#success", error: 'PROCESS_SUCCESS', context: ["runId", "pull_request.issue_url"]},
-  {id: "tf_validate_check#failure", error: 'PROVISION_VALIDATE_ERROR', context: ["runId", "pull_request.issue_url"]},
-  {id: "apply#failure", error: 'PROVISION_APPLY_ERROR', context: ["runId", "pull_request.issue_url"]},
-  {id: "apply#success", error: 'PROVISION_SUCCESS', context: ["runId", "pull_request.issue_url"]},
+  {id: "req_generate#(failure|skipped)", error: 'HANDLE_TEMPLATE_ERROR', context: ["run_id:runId", "repository_url:repository.html_url"]},
+  {id: "req_create_pr_check#(failure|skipped)", error: 'HANDLE_UNCHANGED_ERROR', context: ["run_id:runId", "repository_url:repository.html_url"]},
+  {id: "req_create_pr#(failure|skipped)", error: 'HANDLE_CREATE_PR_ERROR', context: ["run_id:runId", "repository_url:repository.html_url"]},
+  {id: "req_create_pr#success", error: 'HANDLE_SUCCESS', context: ["run_id:runId", "pull_request_url:pull-request-url", "repository_url:repository.html_url"]},
+  {id: "proc_close_pr#failure", error: 'PROCESS_CLOSE_PR_ERROR', context: ["run_id:runId", "pull_request_url:pull_request.issue_url", "repository_url:repository.html_url"]},
+  {id: "proc_close_pr#success", error: 'PROCESS_SUCCESS', context: ["run_id:runId", "pull_request_url:pull_request.issue_url", "repository_url:repository.html_url"]},
+  {id: "plan#failure", error: 'PROVISION_VALIDATE_ERROR', context: ["run_id:runId", "pull_request_url:pull_request.issue_url", "repository_url:repository.html_url", "details:stderr"]},
+  {id: "apply#failure", error: 'PROVISION_APPLY_ERROR', context: ["run_id:runId", "pull_request_url:pull_request.issue_url", "repository_url:repository.html_url", "details:stderr"]},
+  {id: "apply#success", error: 'PROVISION_SUCCESS', context: ["run_id:runId", "pull_request_url:pull_request.issue_url", "repository_url:repository.html_url"]},
 );
 
 const getValue = (path, obj) => path.split('.').reduce((acc, c) => acc && acc[c], obj);
@@ -31111,9 +31111,12 @@ async function main() {
       if (step.outcome.match(stepErrorStatus)) {
         message = {
           status: stepsErrors[i].error,
-          context: Object.fromEntries(stepsErrors[i].context.map(
-            ctx => [ctx.replace('.', '_'), (getValue(ctx, step.outputs) ?? getValue(ctx, github.context) ?? getValue(ctx, github.context.payload) ?? '')]
-          ))
+          context: Object.fromEntries(stepsErrors[i].context.map(ctx => {
+            const ctx_name = ctx.split(':')[0];
+            const ctx_path = ctx.split(':')[1] ?? ctx_name;
+
+            return [ctx_name, (getValue(ctx_path, step.outputs) ?? getValue(ctx_path, github.context) ?? getValue(ctx_path, github.context.payload) ?? '')]
+          }))
         };
         break;
       }
