@@ -66,6 +66,7 @@ jobs:
         continue-on-error: true
 
       - name: Fail on the Terraform plan errors
+        id: tf_validate_check
         if: inputs.dry_run == 'true' && steps.plan.outcome == 'failure'
         run: exit 1
 
@@ -78,5 +79,13 @@ jobs:
           terraform -chdir=${{ inputs.workspace_path }} apply -auto-approve -no-color -input=false | tee apply.log
 
       - name: Fail on the Terraform apply errors
+        id: tf_apply_check
         if: inputs.dry_run == 'false' && steps.apply.outcome == 'failure'
         run: exit 1
+
+      - name: "Notify"
+        uses: ./actions/notify
+        if: always()
+        with:
+          steps: ${{ toJSON(steps) }}
+          message: '{"foo": "bar"}'

@@ -7,6 +7,11 @@ const stepsErrors = new Array(
   {id: "req_create_pr_check#(failure|skipped)", error: 'HANDLE_UNCHANGED_ERROR', context: ["runId", "repository.html_url"]},
   {id: "req_create_pr#(failure|skipped)", error: 'HANDLE_CREATE_PR_ERROR', context: ["runId", "repository.html_url"]},
   {id: "req_create_pr#success", error: 'HANDLE_SUCCESS', context: ["runId", "pull-request-url", "repository.html_url"]},
+  {id: "proc_close_pr#failure", error: 'PROCESS_CLOSE_PR_ERROR', context: ["runId", "issue.html_url"]},
+  {id: "proc_close_pr#success", error: 'PROCESS_SUCCESS', context: ["runId", "issue.html_url"]},
+  {id: "tf_validate_check#failure", error: 'PROVISION_VALIDATE_ERROR', context: ["runId", "issue.html_url"]},
+  {id: "apply#failure", error: 'PROVISION_APPLY_ERROR', context: ["runId", "issue.html_url"]},
+  {id: "apply#success", error: 'PROVISION_SUCCESS', context: ["runId", "issue.html_url"]},
 );
 
 const getValue = (path, obj) => path.split('.').reduce((acc, c) => acc && acc[c], obj);
@@ -36,6 +41,7 @@ async function main() {
   }
   inputMessage["pipeline_status"] = message;
   console.log(inputMessage);
+  console.log(github.context)
 
   // Pubsub logic
 }
