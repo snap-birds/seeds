@@ -6,7 +6,7 @@ const stepsErrors = new Array(
   {id: "req_generate#(failure|skipped)", error: 'HANDLE_TEMPLATE_ERROR', context: ["runId", "repository.html_url"]},
   {id: "req_create_pr_check#(failure|skipped)", error: 'HANDLE_UNCHANGED_ERROR', context: ["runId", "repository.html_url"]},
   {id: "req_create_pr#(failure|skipped)", error: 'HANDLE_CREATE_PR_ERROR', context: ["runId", "repository.html_url"]},
-  {id: "req_create_pr#success", error: 'HANDLE_SUCCESS', context: ["run_id", "pull-request-url", "repository.html_url"]},
+  {id: "req_create_pr#success", error: 'HANDLE_SUCCESS', context: ["runId", "pull-request-url", "repository.html_url"]},
 );
 
 const getValue = (path, obj) => path.split('.').reduce((acc, c) => acc && acc[c], obj);
