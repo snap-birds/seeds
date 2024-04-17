@@ -1,12 +1,12 @@
 name: 'Notify action'
 description: 'foobar'
-outputs:
+inputs:
   steps:
     description: 'Steps context'
-  context:
-    description: 'Additional context'
+    required: true
   message:
     description: 'Message to update'
+    required: true
 runs:
   using: 'node20'
   main: 'dist/index.js'
