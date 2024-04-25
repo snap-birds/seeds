@@ -59,12 +59,7 @@ jobs:
       - name: debug 2
         if: always()
         run: |
-          echo $GITHUB_EVENT_PATH
-          DIR_EV=`dirname $GITHUB_EVENT_PATH`
-          ls -l $DIR_EV
-          ls -l $DIR_EV/../
-          ls -l $DIR_EV/../../
-          ls -l /home/runner/work/_PipelineMapping/
+          cat /home/runner/work/_PipelineMapping/snap-birds/seeds/PipelineFolder.json
 
       - name: debug 3
         if: always()
