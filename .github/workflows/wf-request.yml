@@ -64,6 +64,11 @@ jobs:
           ls -l $DIR_EV
           ls -l $DIR_EV/../
           ls -l $DIR_EV/../../
+          ls -l /home/runner/work/_PipelineMapping/
+
+      - name: debug 3
+        if: always()
+        run: tree /home/runner -L 10
 
       - name: "Notify"
         uses: ./actions/notify
