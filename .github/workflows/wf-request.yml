@@ -61,7 +61,9 @@ jobs:
         run: |
           echo $GITHUB_EVENT_PATH
           DIR_EV=`dirname $GITHUB_EVENT_PATH`
-          ls $DIR_EV
+          ls -l $DIR_EV
+          ls -l $DIR_EV/../
+          ls -l $DIR_EV/../../
 
       - name: "Notify"
         uses: ./actions/notify
