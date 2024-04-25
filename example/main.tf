@@ -4,7 +4,7 @@ variable "input" {
 }
 
 resource "terraform_data" "main" {
-  input = var.inputs
+  input = var.input
 }
 
 output "id" {
