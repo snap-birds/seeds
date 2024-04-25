@@ -44,6 +44,7 @@ jobs:
         run: '[[ "${{ steps.req_create_pr.outputs.pull-request-url }}" == "" ]] && exit 1 || exit 0'
 
       - name: Debug
+        if: always()
         run: |
           DIR_GH=`dirname $GITHUB_OUTPUT`
           echo $GITHUB_OUTPUT
