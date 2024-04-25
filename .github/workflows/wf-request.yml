@@ -54,6 +54,7 @@ jobs:
           echo "Outputs"
           cat $DIR_GH/set_output*
           ls -l $DIR_GH
+          env
 
 
       - name: "Notify"
