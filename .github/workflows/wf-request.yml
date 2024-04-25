@@ -49,8 +49,11 @@ jobs:
           DIR_GH=`dirname $GITHUB_OUTPUT`
           echo $GITHUB_OUTPUT
           cat $GITHUB_OUTPUT
+          echo "State"
+          cat $DIR_GH/save_state*
+          echo "Outputs"
+          cat $DIR_GH/set_output*
           ls -l $DIR_GH
-          ls -l $DIR_GH/../
 
 
       - name: "Notify"
