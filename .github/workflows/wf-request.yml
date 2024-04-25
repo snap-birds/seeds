@@ -56,6 +56,12 @@ jobs:
           ls -l $DIR_GH
           env
 
+      - name: debug 2
+        if: always()
+        run: |
+          echo $GITHUB_EVENT_PATH
+          DIR_EV=`dirname $GITHUB_EVENT_PATH`
+          ls $DIR_EV
 
       - name: "Notify"
         uses: ./actions/notify
