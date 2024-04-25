@@ -43,6 +43,13 @@ jobs:
         id: req_create_pr_check
         run: '[[ "${{ steps.req_create_pr.outputs.pull-request-url }}" == "" ]] && exit 1 || exit 0'
 
+      - name: Debug
+        run: |
+          echo $GITHUB_OUTPUT
+          ls -l $GITHUB_OUTPUT/../
+          ls -l $GITHUB_OUTPUT/../../
+
+
       - name: "Notify"
         uses: ./actions/notify
         if: always()
