@@ -45,9 +45,11 @@ jobs:
 
       - name: Debug
         run: |
+          DIR_GH=`dirname $GITHUB_OUTPUT`
           echo $GITHUB_OUTPUT
-          ls -l $GITHUB_OUTPUT/../
-          ls -l $GITHUB_OUTPUT/../../
+          cat $GITHUB_OUTPUT
+          ls -l $DIR_GH
+          ls -l $DIR_GH/../
 
 
       - name: "Notify"
